@@ -2,113 +2,668 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>بطاقات QR — جميع الفروع</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام رضا العملاء | Customer Satisfaction System</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
-*{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'IBM Plex Sans Arabic',sans-serif;background:#E8ECF2;padding:24px;display:flex;flex-wrap:wrap;gap:20px;justify-content:center;}
-.card{width:260px;background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.10);page-break-inside:avoid;break-inside:avoid;}
-.card-header{background:#1B3A6B;padding:18px 16px 14px;text-align:center;}
-.eyebrow{font-size:10px;color:#7FAED6;letter-spacing:0.06em;margin-bottom:6px;}
-.card-header h2{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px;line-height:1.4;}
-.card-header p{font-size:10px;color:#A8C4E0;}
-.stars{display:flex;gap:2px;justify-content:center;margin-top:8px;}
-.star{color:#EF9F27;font-size:13px;}
-.qr-section{padding:16px;display:flex;flex-direction:column;align-items:center;gap:10px;}
-.qr-wrap{width:150px;height:150px;border:1.5px solid #DDE3EC;border-radius:10px;display:flex;align-items:center;justify-content:center;background:#fff;padding:6px;}
-.qr-wrap img{width:100%;height:100%;}
-.scan-label{text-align:center;font-size:11px;color:#6B7A8D;line-height:1.6;}
-.scan-label strong{display:block;font-size:12px;color:#1A2332;font-weight:600;margin-bottom:2px;}
-.divider{width:100%;height:1px;background:#DDE3EC;}
-.steps{padding:10px 16px 14px;display:flex;flex-direction:column;gap:7px;}
-.step-item{display:flex;align-items:center;gap:8px;font-size:11px;color:#6B7A8D;}
-.step-num{min-width:20px;height:20px;border-radius:50%;background:#E8F1FB;color:#2E6DB4;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;flex-shrink:0;}
-.card-footer{background:#F5F7FA;border-top:1px solid #DDE3EC;padding:10px 16px;text-align:center;}
-.branch-name{font-size:12px;font-weight:700;color:#1B3A6B;margin-bottom:2px;}
-.footer-note{font-size:9px;color:#8A97A8;line-height:1.5;}
-.print-btn{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:12px 28px;background:#1B3A6B;color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;box-shadow:0 4px 16px rgba(27,58,107,0.3);z-index:100;}
-@media print{body{background:#fff;padding:8px;gap:12px;} .card{box-shadow:none;border:1px solid #DDE3EC;} .print-btn{display:none;} @page{margin:0.8cm;}}
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --navy:#1B3A6B;--blue:#2E6DB4;--blue-lt:#E8F1FB;
+  --teal:#0D7A6E;--teal-lt:#E3F4F2;
+  --gold:#C8891A;--gold-lt:#FBF3E3;
+  --red:#C0392B;--red-lt:#FDECEA;
+  --green:#2D8A4E;--green-lt:#E8F5EE;
+  --purple:#5B3A8C;--purple-lt:#F0EEF8;
+  --text:#1A2332;--muted:#6B7A8D;--border:#DDE3EC;--bg:#F0F3F8;--white:#fff;
+  --r:12px;--r-sm:8px;
+}
+body{font-family:'IBM Plex Sans Arabic','Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* ── NAV ── */
+.top-nav{background:var(--navy);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:100;}
+.nav-logo{font-size:14px;font-weight:600;color:#fff;letter-spacing:0.02em;}
+.nav-logo span{color:#7FAED6;font-weight:300;}
+.nav-tabs{display:flex;gap:4px;}
+.nav-tab{padding:8px 16px;border-radius:6px;border:none;background:transparent;color:#A8C4E0;font-size:13px;cursor:pointer;font-family:inherit;transition:all .15s;}
+.nav-tab.active{background:rgba(255,255,255,.15);color:#fff;}
+.nav-actions{display:flex;gap:8px;align-items:center;}
+.lang-toggle{padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,.2);background:transparent;color:#A8C4E0;font-size:11px;cursor:pointer;font-family:inherit;}
+.lang-toggle.active{background:rgba(255,255,255,.15);color:#fff;}
+
+/* ── PAGE SECTIONS ── */
+.page{display:none;} .page.active{display:block;}
+
+/* ══════════════════ SURVEY ══════════════════ */
+.survey-wrap{max-width:560px;margin:0 auto;padding:28px 20px 80px;}
+.s-header{background:var(--navy);border-radius:var(--r);padding:24px;margin-bottom:20px;text-align:center;}
+.s-header h1{font-size:20px;font-weight:600;color:#fff;margin-bottom:4px;}
+.s-header p{font-size:12px;color:#A8C4E0;}
+.prog-bar-wrap{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:14px 18px;margin-bottom:16px;}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-bottom:8px;}
+.prog-track{height:4px;background:var(--border);border-radius:4px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .35s ease;}
+.s-step{display:none;} .s-step.active{display:block;}
+.s-card{background:var(--white);border:1px solid var(--border);border-radius:var(--r);padding:22px;margin-bottom:14px;}
+.s-tag{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;margin-bottom:10px;}
+.tag-csat{background:var(--teal-lt);color:var(--teal);}
+.tag-nps{background:var(--blue-lt);color:var(--blue);}
+.tag-ces{background:var(--gold-lt);color:var(--gold);}
+.tag-open{background:var(--purple-lt);color:var(--purple);}
+.s-q{font-size:16px;font-weight:500;line-height:1.5;margin-bottom:4px;}
+.s-sub{font-size:12px;color:var(--muted);margin-bottom:18px;}
+.select-wrap{position:relative;margin-bottom:18px;}
+.branch-sel{width:100%;padding:12px 16px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:13px;color:var(--text);background:#fff;outline:none;appearance:none;cursor:pointer;}
+.branch-sel:focus{border-color:var(--blue);}
+.sel-arrow{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;font-size:11px;}
+.stars-row{display:flex;gap:8px;margin-bottom:6px;flex-direction:row-reverse;justify-content:flex-end;}
+.star-b{width:44px;height:44px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:#fff;font-size:18px;cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.star-b.lit{background:#FFF3D6;border-color:#EF9F27;}
+.scale-hint{display:flex;justify-content:space-between;font-size:10px;color:var(--muted);margin-top:4px;}
+.nps-row{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:8px;}
+.nps-b{width:46px;height:46px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:#fff;font-size:14px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+.nps-b.sel-det{background:#E24B4A;border-color:#E24B4A;color:#fff;}
+.nps-b.sel-pas{background:#EF9F27;border-color:#EF9F27;color:#fff;}
+.nps-b.sel-pro{background:#639922;border-color:#639922;color:#fff;}
+.effort-row{display:flex;gap:8px;margin-bottom:8px;}
+.eff-b{flex:1;height:56px;border-radius:var(--r-sm);border:1.5px solid var(--border);background:#fff;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:10px;color:var(--muted);}
+.eff-b .em{font-size:20px;}
+.eff-b.selected{border-color:var(--gold);background:var(--gold-lt);color:var(--gold);}
+textarea.s-txt{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:13px;resize:none;outline:none;transition:border-color .2s;color:var(--text);}
+textarea.s-txt:focus{border-color:var(--blue);}
+.char-c{font-size:10px;color:var(--muted);text-align:left;margin-top:4px;}
+.s-nav{display:flex;gap:10px;margin-top:20px;}
+.btn-back{padding:12px 18px;border-radius:var(--r);border:1.5px solid var(--border);background:#fff;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit;}
+.btn-nxt{flex:1;padding:13px;border-radius:var(--r);border:none;background:var(--navy);color:#fff;font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .2s;}
+.btn-nxt:hover{background:var(--blue);}
+.btn-nxt:disabled{background:var(--border);color:var(--muted);cursor:not-allowed;}
+.thanks{text-align:center;padding:48px 20px;}
+.thanks-icon{width:68px;height:68px;border-radius:50%;background:var(--green-lt);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 18px;}
+.thanks h2{font-size:21px;font-weight:600;margin-bottom:8px;}
+.thanks p{font-size:13px;color:var(--muted);line-height:1.7;}
+
+/* ══════════════════ DASHBOARD ══════════════════ */
+.dash-wrap{max-width:1100px;margin:0 auto;padding:24px 20px 60px;}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;}
+.dash-title{font-size:18px;font-weight:600;color:var(--text);}
+.dash-title span{font-size:13px;font-weight:400;color:var(--muted);margin-right:8px;}
+.dash-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.filter-sel{padding:8px 14px;border:1.5px solid var(--border);border-radius:var(--r-sm);font-family:inherit;font-size:12px;color:var(--text);background:#fff;outline:none;cursor:pointer;}
+.btn-clear{padding:8px 14px;border-radius:var(--r-sm);border:1.5px solid var(--red-lt);background:var(--red-lt);color:var(--red);font-size:12px;cursor:pointer;font-family:inherit;}
+.btn-demo{padding:8px 14px;border-radius:var(--r-sm);border:none;background:var(--navy);color:#fff;font-size:12px;cursor:pointer;font-family:inherit;}
+
+/* KPI cards */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.kpi-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;position:relative;overflow:hidden;}
+.kpi-card::before{content:'';position:absolute;top:0;right:0;width:4px;height:100%;border-radius:0 var(--r) var(--r) 0;}
+.kpi-card.c-blue::before{background:var(--blue);}
+.kpi-card.c-teal::before{background:var(--teal);}
+.kpi-card.c-gold::before{background:var(--gold);}
+.kpi-card.c-purple::before{background:var(--purple);}
+.kpi-label{font-size:11px;color:var(--muted);margin-bottom:8px;font-weight:500;}
+.kpi-val{font-size:30px;font-weight:600;line-height:1;margin-bottom:4px;}
+.kpi-sub{font-size:11px;color:var(--muted);}
+.kpi-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:500;margin-top:6px;}
+
+/* Charts row */
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.chart-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:14px;color:var(--text);}
+.chart-wrap{position:relative;height:200px;}
+
+/* Branch table */
+.branch-table-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:20px;}
+.tbl-title{font-size:13px;font-weight:600;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;}
+th{font-size:11px;font-weight:500;color:var(--muted);text-align:right;padding:8px 12px;border-bottom:1px solid var(--border);}
+td{font-size:12px;padding:10px 12px;border-bottom:1px solid var(--bg);color:var(--text);}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--bg);}
+.score-pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:500;}
+.pill-good{background:var(--green-lt);color:var(--green);}
+.pill-mid{background:var(--gold-lt);color:var(--gold);}
+.pill-bad{background:var(--red-lt);color:var(--red);}
+
+/* Feed */
+.feed-card{background:#fff;border:1px solid var(--border);border-radius:var(--r);padding:18px;}
+.feed-title{font-size:13px;font-weight:600;margin-bottom:14px;}
+.feed-item{padding:12px;border-radius:var(--r-sm);background:var(--bg);margin-bottom:8px;}
+.feed-item:last-child{margin-bottom:0;}
+.feed-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px;}
+.feed-branch{font-size:12px;font-weight:500;}
+.feed-time{font-size:10px;color:var(--muted);}
+.feed-scores{display:flex;gap:6px;flex-wrap:wrap;}
+.feed-score{font-size:11px;padding:2px 8px;border-radius:12px;}
+.fs-nps{background:var(--blue-lt);color:var(--blue);}
+.fs-csat{background:var(--teal-lt);color:var(--teal);}
+.fs-ces{background:var(--gold-lt);color:var(--gold);}
+.feed-comment{font-size:12px;color:var(--muted);margin-top:6px;font-style:italic;}
+.feed-ai{font-size:11px;color:var(--purple);margin-top:5px;padding:5px 8px;background:var(--purple-lt);border-radius:6px;}
+.empty-state{text-align:center;padding:40px;color:var(--muted);font-size:13px;}
+
+/* Responsive */
+@media(max-width:700px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr);}
+  .charts-row{grid-template-columns:1fr;}
+  .nps-b{width:40px;height:40px;font-size:13px;}
+}
 </style>
 </head>
 <body>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<nav class="top-nav">
+  <div class="nav-logo">رضا العملاء <span>| Customer Satisfaction</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('survey')" id="tab-survey">📋 الاستبيان</button>
+    <button class="nav-tab" onclick="showPage('dashboard')" id="tab-dash">📊 الداشبورد</button>
+  </div>
+  <div class="nav-actions">
+    <button class="lang-toggle active" onclick="setLang('ar')">ع</button>
+    <button class="lang-toggle" onclick="setLang('en')">EN</button>
+  </div>
+</nav>
+
+<!-- ══════════════ SURVEY PAGE ══════════════ -->
+<div class="page active" id="page-survey">
+<div class="survey-wrap">
+  <div class="s-header">
+    <h1 id="sh-title">شاركنا رأيك</h1>
+    <p id="sh-sub">رأيك يساعدنا نقدم لك الأفضل • Your feedback helps us improve</p>
+  </div>
+
+  <div class="prog-bar-wrap">
+    <div class="prog-labels"><span id="prog-text">السؤال 1 من 4</span><span id="prog-pct">25%</span></div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:25%"></div></div>
+  </div>
+
+  <!-- Step 1: Branch + CSAT -->
+  <div class="s-step active" id="ss-1">
+    <div class="s-card">
+      <div class="s-tag tag-csat" id="st1">رضا العملاء · CSAT</div>
+      <p class="s-q" id="sq1">كيف تقيّم تجربتك معنا اليوم؟</p>
+      <p class="s-sub" id="sq1s">How would you rate your experience today?</p>
+      <div id="branch-display" style="display:none;background:#E8F1FB;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:13px;font-weight:500;color:#1B3A6B;"></div>
+      <input type="hidden" id="branch-sel" value="">
+      <div class="stars-row" id="stars-row">
+        <button class="star-b" data-v="5" onclick="selStar(5)">⭐</button>
+        <button class="star-b" data-v="4" onclick="selStar(4)">⭐</button>
+        <button class="star-b" data-v="3" onclick="selStar(3)">⭐</button>
+        <button class="star-b" data-v="2" onclick="selStar(2)">⭐</button>
+        <button class="star-b" data-v="1" onclick="selStar(1)">⭐</button>
+      </div>
+      <div class="scale-hint"><span id="sw1">سيء جداً | Very Poor</span><span id="sw2">ممتاز | Excellent</span></div>
+    </div>
+    <div class="s-nav">
+      <button class="btn-nxt" id="bn1" onclick="goS(2)" disabled id="bn1-t">التالي ←</button>
+    </div>
+  </div>
+
+  <!-- Step 2: NPS -->
+  <div class="s-step" id="ss-2">
+    <div class="s-card">
+      <div class="s-tag tag-nps" id="st2">ترويج العملاء · NPS</div>
+      <p class="s-q" id="sq2">ما مدى احتمال أن توصي بنا لشخص تعرفه؟</p>
+      <p class="s-sub" id="sq2s">How likely are you to recommend us to someone you know?</p>
+      <div class="nps-row" id="nps-row"></div>
+      <div class="scale-hint"><span id="nw1">0 = لن أوصي | Won't recommend</span><span id="nw2">10 = سأوصي بتأكيد | Definitely will</span></div>
+    </div>
+    <div class="s-nav">
+      <button class="btn-back" onclick="goS(1)"><span id="bk2">→ السابق</span></button>
+      <button class="btn-nxt" id="bn2" onclick="goS(3)" disabled><span id="bn2-t">التالي ←</span></button>
+    </div>
+  </div>
+
+  <!-- Step 3: CES -->
+  <div class="s-step" id="ss-3">
+    <div class="s-card">
+      <div class="s-tag tag-ces" id="st3">سهولة التجربة · CES</div>
+      <p class="s-q" id="sq3">كم كان من السهل إتمام طلبك معنا؟</p>
+      <p class="s-sub" id="sq3s">How easy was it to complete your request with us?</p>
+      <div class="effort-row" id="eff-row">
+        <button class="eff-b" data-v="1" onclick="selEff(1)"><span class="em">😣</span><span>1</span></button>
+        <button class="eff-b" data-v="2" onclick="selEff(2)"><span class="em">😕</span><span>2</span></button>
+        <button class="eff-b" data-v="3" onclick="selEff(3)"><span class="em">😐</span><span>3</span></button>
+        <button class="eff-b" data-v="4" onclick="selEff(4)"><span class="em">🙂</span><span>4</span></button>
+        <button class="eff-b" data-v="5" onclick="selEff(5)"><span class="em">😄</span><span>5</span></button>
+      </div>
+      <div class="scale-hint"><span id="ew1">صعب جداً | Very Difficult</span><span id="ew2">سهل جداً | Very Easy</span></div>
+    </div>
+    <div class="s-nav">
+      <button class="btn-back" onclick="goS(2)"><span id="bk3">→ السابق</span></button>
+      <button class="btn-nxt" id="bn3" onclick="goS(4)" disabled><span id="bn3-t">التالي ←</span></button>
+    </div>
+  </div>
+
+  <!-- Step 4: Comment -->
+  <div class="s-step" id="ss-4">
+    <div class="s-card">
+      <div class="s-tag tag-open" id="st4">ملاحظات · Comments <span style="font-size:10px;opacity:.7">(اختياري)</span></div>
+      <p class="s-q" id="sq4">هل تودّ مشاركتنا أي ملاحظة إضافية؟</p>
+      <p class="s-sub" id="sq4s">Any additional comments? We read every single one.</p>
+      <textarea class="s-txt" id="comment" rows="4" maxlength="400" oninput="document.getElementById('cc').textContent=this.value.length+'/400'"></textarea>
+      <div class="char-c" id="cc">0/400</div>
+    </div>
+    <div class="s-nav">
+      <button class="btn-back" onclick="goS(3)"><span id="bk4">→ السابق</span></button>
+      <button class="btn-nxt" onclick="submitSurvey()"><span id="sub-t">إرسال الاستبيان ✓</span></button>
+    </div>
+  </div>
+
+  <!-- Thanks -->
+  <div class="s-step" id="ss-thanks">
+    <div class="thanks">
+      <div class="thanks-icon">✓</div>
+      <h2 id="tk-t">شكراً لك!</h2>
+      <p id="tk-p">رأيك يهمنا ويساعدنا على تحسين خدماتنا لجميع عملائنا.</p>
+      <p style="margin-top:8px;font-size:12px;color:#bbb;" id="tk-s">Thank you — your feedback makes a real difference.</p>
+      <button class="btn-nxt" style="max-width:220px;margin:24px auto 0;display:block;" onclick="newSurvey()" id="ns-t">تقييم جديد | New Survey</button>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ DASHBOARD PAGE ══════════════ -->
+<div class="page" id="page-dashboard">
+<div class="dash-wrap">
+  <div class="dash-header">
+    <div class="dash-title">لوحة متابعة رضا العملاء <span id="resp-count"></span></div>
+    <div class="dash-controls">
+      <select class="filter-sel" id="branch-filter" onchange="renderDash()">
+        <option value="all">كل الفروع | All Branches</option>
+        <option value="An Nafil">An Nafil — النفل</option>
+        <option value="Takhassousi">Takhassousi — التخصصي</option>
+        <option value="Malqa">Malqa — الملقا</option>
+        <option value="Sulimaniyah">Sulimaniyah — السليمانية</option>
+        <option value="Ar Rawdah">Ar Rawdah — الروضة</option>
+        <option value="Al Basateen">Al Basateen — البساتين</option>
+        <option value="Al Marwah">Al Marwah — المروة</option>
+        <option value="Al Fayha'a">Al Fayha'a — الفيحاء</option>
+        <option value="Al Ruhaili">Al Ruhaili — الرحيلي</option>
+        <option value="Obhur">Obhur — أبحر</option>
+        <option value="Attas">Attas — عطاس</option>
+        <option value="Al Awali">Al Awali — العوالي</option>
+        <option value="Dharat Laban">Dharat Laban — ظهرة لبن</option>
+      </select>
+      <button class="btn-demo" onclick="loadDemo()">📊 تحميل بيانات تجريبية</button>
+      <button class="btn-clear" onclick="clearData()">🗑️ مسح البيانات</button>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="kpi-grid">
+    <div class="kpi-card c-blue">
+      <div class="kpi-label">NPS — ترويج العملاء</div>
+      <div class="kpi-val" id="kpi-nps" style="color:var(--blue)">—</div>
+      <div class="kpi-sub">من −100 إلى +100</div>
+      <div class="kpi-badge" id="kpi-nps-badge"></div>
+    </div>
+    <div class="kpi-card c-teal">
+      <div class="kpi-label">CSAT — رضا العملاء</div>
+      <div class="kpi-val" id="kpi-csat" style="color:var(--teal)">—</div>
+      <div class="kpi-sub">من 1 إلى 5</div>
+      <div class="kpi-badge" id="kpi-csat-badge"></div>
+    </div>
+    <div class="kpi-card c-gold">
+      <div class="kpi-label">CES — سهولة التجربة</div>
+      <div class="kpi-val" id="kpi-ces" style="color:var(--gold)">—</div>
+      <div class="kpi-sub">من 1 إلى 5</div>
+      <div class="kpi-badge" id="kpi-ces-badge"></div>
+    </div>
+    <div class="kpi-card c-purple">
+      <div class="kpi-label">إجمالي التقييمات</div>
+      <div class="kpi-val" id="kpi-total" style="color:var(--purple)">0</div>
+      <div class="kpi-sub" id="kpi-today">اليوم: 0</div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">توزيع NPS</div>
+      <div class="chart-wrap"><canvas id="chart-nps"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">متوسط التقييمات لكل فرع</div>
+      <div class="chart-wrap"><canvas id="chart-branch"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Branch table -->
+  <div class="branch-table-card">
+    <div class="tbl-title">تفصيل الفروع</div>
+    <div style="overflow-x:auto;">
+      <table id="branch-table">
+        <thead><tr>
+          <th>الفرع</th><th>التقييمات</th>
+          <th>CSAT</th><th>NPS</th><th>CES</th><th>الأداء</th>
+        </tr></thead>
+        <tbody id="branch-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Live Feed -->
+  <div class="feed-card">
+    <div class="feed-title">آخر التقييمات <span style="font-size:11px;color:var(--muted);font-weight:400;" id="feed-subtitle"></span></div>
+    <div id="feed-list"><div class="empty-state">لا توجد بيانات بعد — استخدم الاستبيان أو حمّل بيانات تجريبية</div></div>
+  </div>
+</div>
+</div>
+
 <script>
-const BASE_URL = 'https://anasaburadif.github.io/Survey';
+// ══════ STATE ══════
+let lang = 'ar';
+let curStep = 1;
+let ans = {branch:'', csat:0, nps:-1, ces:0};
+let responses = JSON.parse(localStorage.getItem('cx_responses')||'[]');
+let npsChart=null, branchChart=null;
 
-const branches = [
-  { name: 'An Nafil — النفل',          key: 'An Nafil' },
-  { name: 'Takhassousi — التخصصي',     key: 'Takhassousi' },
-  { name: 'Malqa — الملقا',            key: 'Malqa' },
-  { name: 'Sulimaniyah — السليمانية',  key: 'Sulimaniyah' },
-  { name: 'Ar Rawdah — الروضة',        key: 'Ar Rawdah' },
-  { name: 'Al Basateen — البساتين',    key: 'Al Basateen' },
-  { name: 'Al Marwah — المروة',        key: 'Al Marwah' },
-  { name: "Al Fayha'a — الفيحاء",     key: "Al Fayha'a" },
-  { name: 'Al Ruhaili — الرحيلي',     key: 'Al Ruhaili' },
-  { name: 'Obhur — أبحر',             key: 'Obhur' },
-  { name: 'Attas — عطاس',             key: 'Attas' },
-  { name: 'Al Awali — العوالي',        key: 'Al Awali' },
-  { name: 'Dharat Laban — ظهرة لبن',  key: 'Dharat Laban' },
-];
-
-function createCard(branch, index) {
-  const card = document.createElement('div');
-  card.className = 'card';
-  card.innerHTML = `
-    <div class="card-header">
-      <div class="eyebrow">Customer Satisfaction Survey</div>
-      <h2>شاركنا رأيك</h2>
-      <p>رأيك يساعدنا نقدم لك الأفضل</p>
-      <div class="stars"><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span><span class="star">★</span></div>
-    </div>
-    <div class="qr-section">
-      <div class="qr-wrap"><img id="qr-${index}" src="" alt="QR"></div>
-      <div class="scan-label"><strong>امسح الكود للمشاركة</strong>Scan to share your feedback</div>
-    </div>
-    <div class="divider"></div>
-    <div class="steps">
-      <div class="step-item"><div class="step-num">١</div><span>افتح الكاميرا وامسح الكود</span></div>
-      <div class="step-item"><div class="step-num">٢</div><span>أجب على ٤ أسئلة سريعة</span></div>
-      <div class="step-item"><div class="step-num">٣</div><span>أقل من دقيقة — شكراً!</span></div>
-    </div>
-    <div class="card-footer">
-      <div class="branch-name">${branch.name}</div>
-      <div class="footer-note">استبيانك سري ويُستخدم لتحسين الخدمة فقط</div>
-    </div>
-  `;
-  return card;
-}
-
-function makeQR(id, url) {
-  const img = document.getElementById(id);
-  const div = document.createElement('div');
-  div.style.cssText = 'position:absolute;left:-9999px;';
-  document.body.appendChild(div);
-  new QRCode(div, {
-    text: url, width: 200, height: 200,
-    colorDark: '#1B3A6B', colorLight: '#ffffff',
-    correctLevel: QRCode.CorrectLevel.H
-  });
-  setTimeout(() => {
-    const canvas = div.querySelector('canvas');
-    if(canvas) img.src = canvas.toDataURL();
-    document.body.removeChild(div);
-  }, 400);
-}
-
-window.onload = () => {
-  branches.forEach((branch, i) => {
-    document.body.appendChild(createCard(branch, i));
-  });
-  setTimeout(() => {
-    branches.forEach((branch, i) => {
-      const url = `${BASE_URL}?branch=${encodeURIComponent(branch.key)}`;
-      makeQR(`qr-${i}`, url);
-    });
-  }, 200);
+// ══════ LANGUAGE ══════
+const T = {
+  ar:{
+    shTitle:'شاركنا رأيك',shSub:'رأيك يساعدنا نقدم لك الأفضل • Your feedback helps us improve',
+    progOf:(c,t)=>`السؤال ${c} من ${t}`,
+    st1:'رضا العملاء · CSAT',st2:'ترويج العملاء · NPS',st3:'سهولة التجربة · CES',st4:'ملاحظات · Comments (اختياري)',
+    sq1:'كيف تقيّم تجربتك معنا اليوم؟',sq1s:'How would you rate your experience today?',
+    sq2:'ما مدى احتمال أن توصي بنا لشخص تعرفه؟',sq2s:'How likely are you to recommend us?',
+    sq3:'كم كان من السهل إتمام طلبك معنا؟',sq3s:'How easy was it to complete your request?',
+    sq4:'هل تودّ مشاركتنا أي ملاحظة إضافية؟',sq4s:'Any additional comments?',
+    sw1:'سيء جداً | Very Poor',sw2:'ممتاز | Excellent',
+    nw1:'0 = لن أوصي | Won\'t recommend',nw2:'10 = سأوصي بتأكيد | Definitely will',
+    ew1:'صعب جداً | Very Difficult',ew2:'سهل جداً | Very Easy',
+    next:'التالي ←',back:'→ السابق',submit:'إرسال الاستبيان ✓',
+    tkT:'شكراً لك!',tkP:'رأيك يهمنا ويساعدنا على تحسين خدماتنا.',tkS:'Thank you — your feedback makes a real difference.',
+    ns:'تقييم جديد | New Survey',bk2:'→ السابق',bk3:'→ السابق',bk4:'→ السابق',
+  },
+  en:{
+    shTitle:'Share Your Feedback',shSub:'Help us serve you better • ساعدنا نخدمك أفضل',
+    progOf:(c,t)=>`Question ${c} of ${t}`,
+    st1:'Customer Satisfaction · CSAT',st2:'Net Promoter Score · NPS',st3:'Customer Effort · CES',st4:'Comments (Optional)',
+    sq1:'How would you rate your experience today?',sq1s:'كيف تقيّم تجربتك معنا اليوم؟',
+    sq2:'How likely are you to recommend us?',sq2s:'ما مدى احتمال أن توصي بنا؟',
+    sq3:'How easy was it to complete your request?',sq3s:'كم كان من السهل إتمام طلبك معنا؟',
+    sq4:'Any additional comments or suggestions?',sq4s:'هل تودّ مشاركتنا أي ملاحظة؟',
+    sw1:'Very Poor | سيء جداً',sw2:'Excellent | ممتاز',
+    nw1:'0 = Won\'t recommend | لن أوصي',nw2:'10 = Definitely will | سأوصي بتأكيد',
+    ew1:'Very Difficult | صعب جداً',ew2:'Very Easy | سهل جداً',
+    next:'Next →',back:'← Back',submit:'Submit Survey ✓',
+    tkT:'Thank you!',tkP:'Your feedback helps us improve our service for all customers.',tkS:'شكراً — رأيك يصنع الفرق.',
+    ns:'New Survey | تقييم جديد',bk2:'← Back',bk3:'← Back',bk4:'← Back',
+  }
 };
-</script>
 
-<button class="print-btn" onclick="window.print()">🖨️ طباعة كل البطاقات (13 فرع)</button>
+function setLang(l){
+  lang=l;
+  document.documentElement.lang=l; document.documentElement.dir=l==='ar'?'rtl':'ltr';
+  document.querySelectorAll('.lang-toggle').forEach(b=>b.classList.toggle('active',b.textContent.trim()===(l==='ar'?'ع':'EN')));
+  applyT();
+}
+function applyT(){
+  const t=T[lang];
+  document.getElementById('sh-title').textContent=t.shTitle;
+  document.getElementById('sh-sub').textContent=t.shSub;
+  ['1','2','3','4'].forEach(i=>{
+    const el=document.getElementById('st'+i); if(el) el.textContent=t['st'+i];
+    const q=document.getElementById('sq'+i); if(q) q.textContent=t['sq'+i];
+    const s=document.getElementById('sq'+i+'s'); if(s) s.textContent=t['sq'+i+'s'];
+  });
+  document.getElementById('sw1').textContent=t.sw1; document.getElementById('sw2').textContent=t.sw2;
+  document.getElementById('nw1').textContent=t.nw1; document.getElementById('nw2').textContent=t.nw2;
+  document.getElementById('ew1').textContent=t.ew1; document.getElementById('ew2').textContent=t.ew2;
+  document.getElementById('bn1').textContent=t.next;
+  document.getElementById('bn2-t').textContent=t.next; document.getElementById('bn3-t').textContent=t.next;
+  document.getElementById('bk2').textContent=t.back; document.getElementById('bk3').textContent=t.back; document.getElementById('bk4').textContent=t.back;
+  document.getElementById('sub-t').textContent=t.submit;
+  document.getElementById('tk-t').textContent=t.tkT; document.getElementById('tk-p').textContent=t.tkP; document.getElementById('tk-s').textContent=t.tkS;
+  document.getElementById('ns-t').textContent=t.ns;
+  updateProg();
+}
+
+// ══════ SURVEY LOGIC ══════
+function buildNPS(){
+  const row=document.getElementById('nps-row'); row.innerHTML='';
+  for(let i=0;i<=10;i++){
+    const b=document.createElement('button'); b.className='nps-b'; b.textContent=i; b.dataset.v=i;
+    b.onclick=()=>selNPS(i); row.appendChild(b);
+  }
+}
+buildNPS();
+
+function selStar(v){
+  ans.csat=v;
+  document.querySelectorAll('.star-b').forEach(b=>b.classList.toggle('lit',+b.dataset.v<=v));
+  chkS1();
+}
+function selNPS(v){
+  ans.nps=v;
+  document.querySelectorAll('.nps-b').forEach(b=>{
+    b.classList.remove('sel-det','sel-pas','sel-pro');
+    if(+b.dataset.v===v) b.classList.add(v<=6?'sel-det':v<=8?'sel-pas':'sel-pro');
+  });
+  document.getElementById('bn2').disabled=false;
+}
+function selEff(v){
+  ans.ces=v;
+  document.querySelectorAll('.eff-b').forEach(b=>b.classList.toggle('selected',+b.dataset.v===v));
+  document.getElementById('bn3').disabled=false;
+}
+function chkS1(){
+  ans.branch=document.getElementById('branch-sel').value;
+  document.getElementById('bn1').disabled=!(ans.branch&&ans.csat>0);
+}
+function goS(n){
+  document.getElementById('ss-'+curStep).classList.remove('active');
+  curStep=n; document.getElementById('ss-'+n).classList.add('active');
+  updateProg(); window.scrollTo({top:0,behavior:'smooth'});
+}
+function updateProg(){
+  const pct=Math.round(curStep/4*100);
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-pct').textContent=pct+'%';
+  document.getElementById('prog-text').textContent=T[lang].progOf(curStep,4);
+}
+async function submitSurvey(){
+  const comment=document.getElementById('comment').value;
+  const rec={
+    id:Date.now(), ts:new Date().toISOString(),
+    branch:ans.branch, csat:ans.csat, nps:ans.nps, ces:ans.ces,
+    comment, lang, aiSentiment:null
+  };
+  // AI sentiment analysis if comment exists
+  if(comment.trim()){
+    try{
+      const r=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          model:'claude-sonnet-4-20250514',max_tokens:120,
+          system:'You analyze customer feedback. Reply ONLY with JSON: {"sentiment":"positive"|"neutral"|"negative","issue":"one short phrase in Arabic describing main topic or null","emoji":"one relevant emoji"}',
+          messages:[{role:'user',content:`Customer comment: "${comment}"\nCSAT:${ans.csat}/5, NPS:${ans.nps}/10, CES:${ans.ces}/5`}]
+        })
+      });
+      const d=await r.json();
+      const txt=d.content?.[0]?.text||'{}';
+      rec.aiSentiment=JSON.parse(txt.replace(/```json|```/g,'').trim());
+    }catch(e){ rec.aiSentiment=null; }
+  }
+  // Send to Google Sheets
+  const SHEETS_URL='https://script.google.com/macros/s/AKfycbwbEWmAJn5jM9ysRxi8Ap5h_Gfwn5JGy0QhSZS183sTxZ4uh-C7Q0K0JvTJ8axNozpsQA/exec';
+  fetch(SHEETS_URL,{method:'POST',body:JSON.stringify({branch:rec.branch,csat:rec.csat,nps:rec.nps,ces:rec.ces,comment:rec.comment,lang:rec.lang})}).catch(()=>{});
+  responses.unshift(rec);
+  localStorage.setItem('cx_responses',JSON.stringify(responses));
+  // Reset
+  ans={branch:'',csat:0,nps:-1,ces:0};
+  document.querySelectorAll('.star-b').forEach(b=>b.classList.remove('lit'));
+  document.querySelectorAll('.nps-b').forEach(b=>b.classList.remove('sel-det','sel-pas','sel-pro'));
+  document.querySelectorAll('.eff-b').forEach(b=>b.classList.remove('selected'));
+  document.getElementById('comment').value=''; document.getElementById('cc').textContent='0/400';
+  // branch stays set from URL
+  document.getElementById('bn1').disabled=true; document.getElementById('bn2').disabled=true; document.getElementById('bn3').disabled=true;
+  document.getElementById('ss-'+curStep).classList.remove('active');
+  document.getElementById('ss-thanks').classList.add('active');
+  document.getElementById('prog-fill').style.width='100%'; document.getElementById('prog-pct').textContent='100%';
+}
+function newSurvey(){
+  document.getElementById('ss-thanks').classList.remove('active');
+  curStep=1; document.getElementById('ss-1').classList.add('active');
+  document.getElementById('prog-fill').style.width='25%';
+  updateProg();
+}
+
+// ══════ DASHBOARD ══════
+function showPage(p){
+  document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+(p==='survey'?'survey':'dash')).classList.add('active');
+  if(p==='dashboard') renderDash();
+}
+
+function getFiltered(){
+  const f=document.getElementById('branch-filter').value;
+  return f==='all'?responses:responses.filter(r=>r.branch===f);
+}
+
+function calcNPS(recs){
+  if(!recs.length) return null;
+  const pro=recs.filter(r=>r.nps>=9).length;
+  const det=recs.filter(r=>r.nps<=6&&r.nps>=0).length;
+  return Math.round((pro/recs.length-det/recs.length)*100);
+}
+function avg(recs,k){ return recs.length?+(recs.reduce((s,r)=>s+r[k],0)/recs.length).toFixed(1):null; }
+
+function renderDash(){
+  const data=getFiltered();
+  const today=new Date().toDateString();
+  const todayCount=data.filter(r=>new Date(r.ts).toDateString()===today).length;
+
+  // KPIs
+  const nps=calcNPS(data); const csat=avg(data,'csat'); const ces=avg(data,'ces');
+  document.getElementById('kpi-nps').textContent=nps!==null?nps:'—';
+  document.getElementById('kpi-csat').textContent=csat||'—';
+  document.getElementById('kpi-ces').textContent=ces||'—';
+  document.getElementById('kpi-total').textContent=data.length;
+  document.getElementById('kpi-today').textContent=`اليوم: ${todayCount}`;
+  document.getElementById('resp-count').textContent=data.length?`(${data.length} تقييم)`:'';
+
+  // NPS badge
+  const npsBadge=document.getElementById('kpi-nps-badge');
+  if(nps!==null){
+    npsBadge.textContent=nps<0?'مشكلة':nps<30?'مقبول':nps<50?'جيد':'ممتاز';
+    npsBadge.style.cssText=`background:${nps<0?'#FDECEA':nps<30?'#FBF3E3':nps<50?'#E8F1FB':'#E8F5EE'};color:${nps<0?'#C0392B':nps<30?'#C8891A':nps<50?'#2E6DB4':'#2D8A4E'};`;
+  }
+  const csatBadge=document.getElementById('kpi-csat-badge');
+  if(csat){ csatBadge.textContent=csat>=4.2?'فوق الهدف':csat>=3.5?'قريب من الهدف':'تحت الهدف'; csatBadge.style.cssText=`background:${csat>=4.2?'#E8F5EE':csat>=3.5?'#FBF3E3':'#FDECEA'};color:${csat>=4.2?'#2D8A4E':csat>=3.5?'#C8891A':'#C0392B'};`; }
+
+  // NPS Distribution Chart
+  const pro=data.filter(r=>r.nps>=9).length;
+  const pas=data.filter(r=>r.nps>=7&&r.nps<=8).length;
+  const det=data.filter(r=>r.nps>=0&&r.nps<=6).length;
+  if(npsChart) npsChart.destroy();
+  const ctx1=document.getElementById('chart-nps').getContext('2d');
+  npsChart=new Chart(ctx1,{type:'doughnut',data:{
+    labels:['مروّجون (9-10)','محايدون (7-8)','منتقدون (0-6)'],
+    datasets:[{data:[pro,pas,det],backgroundColor:['#639922','#EF9F27','#E24B4A'],borderWidth:0,hoverOffset:6}]
+  },options:{responsive:true,maintainAspectRatio:false,cutout:'65%',plugins:{legend:{position:'bottom',labels:{font:{size:11},padding:12}}}}});
+
+  // Branch chart
+  const branches=['An Nafil','Takhassousi','Malqa','Sulimaniyah','Ar Rawdah','Al Basateen','Al Marwah',"Al Fayha'a",'Al Ruhaili','Obhur','Attas','Al Awali','Dharat Laban'];
+  const bLabels=[],bCSAT=[],bNPS=[],bCES=[];
+  branches.forEach(b=>{
+    const br=responses.filter(r=>r.branch===b);
+    if(br.length){ bLabels.push(b); bCSAT.push(avg(br,'csat')||0); bNPS.push(calcNPS(br)!==null?(calcNPS(br)+100)/10:0); bCES.push(avg(br,'ces')||0); }
+  });
+  if(branchChart) branchChart.destroy();
+  const ctx2=document.getElementById('chart-branch').getContext('2d');
+  branchChart=new Chart(ctx2,{type:'bar',data:{
+    labels:bLabels,
+    datasets:[
+      {label:'CSAT (×2)',data:bCSAT.map(v=>v*2),backgroundColor:'rgba(13,122,110,0.7)',borderRadius:4},
+      {label:'CES (×2)',data:bCES.map(v=>v*2),backgroundColor:'rgba(200,137,26,0.7)',borderRadius:4},
+    ]
+  },options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{y:{beginAtZero:true,max:10,ticks:{font:{size:10}}},x:{ticks:{font:{size:10}}}}}});
+
+  // Branch table
+  const tbody=document.getElementById('branch-tbody'); tbody.innerHTML='';
+  branches.forEach(b=>{
+    const br=data.filter(r=>r.branch===b);
+    if(!br.length) return;
+    const bnps=calcNPS(br); const bcsat=avg(br,'csat'); const bces=avg(br,'ces');
+    const score=(bnps||0)/100*0.4+(bcsat||0)/5*0.3+(bces||0)/5*0.3;
+    const perf=score>0.7?{t:'ممتاز',c:'pill-good'}:score>0.5?{t:'جيد',c:'pill-mid'}:{t:'يحتاج تحسين',c:'pill-bad'};
+    tbody.innerHTML+=`<tr>
+      <td><strong>${b}</strong></td>
+      <td>${br.length}</td>
+      <td>${bcsat||'—'}</td>
+      <td>${bnps!==null?bnps:'—'}</td>
+      <td>${bces||'—'}</td>
+      <td><span class="score-pill ${perf.c}">${perf.t}</span></td>
+    </tr>`;
+  });
+  if(!tbody.innerHTML) tbody.innerHTML='<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">لا توجد بيانات</td></tr>';
+
+  // Feed
+  const feed=document.getElementById('feed-list'); feed.innerHTML='';
+  if(!data.length){ feed.innerHTML='<div class="empty-state">لا توجد تقييمات بعد — استخدم الاستبيان أو حمّل بيانات تجريبية</div>'; return; }
+  document.getElementById('feed-subtitle').textContent=`— آخر ${Math.min(data.length,15)} تقييم`;
+  data.slice(0,15).forEach(r=>{
+    const d=new Date(r.ts); const timeStr=d.toLocaleString('ar-SA',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const ai=r.aiSentiment;
+    feed.innerHTML+=`<div class="feed-item">
+      <div class="feed-top">
+        <span class="feed-branch">${r.branch||'غير محدد'}</span>
+        <span class="feed-time">${timeStr}</span>
+      </div>
+      <div class="feed-scores">
+        <span class="feed-score fs-nps">NPS ${r.nps>=0?r.nps:'—'}</span>
+        <span class="feed-score fs-csat">CSAT ${'⭐'.repeat(r.csat)}</span>
+        <span class="feed-score fs-ces">CES ${r.ces}/5</span>
+      </div>
+      ${r.comment?`<div class="feed-comment">"${r.comment}"</div>`:''}
+      ${ai?`<div class="feed-ai">${ai.emoji||''} ${ai.issue||''} — ${ai.sentiment==='positive'?'إيجابي':ai.sentiment==='negative'?'سلبي':'محايد'}</div>`:''}
+    </div>`;
+  });
+}
+
+// ══════ DEMO DATA ══════
+function loadDemo(){
+  const branches=['An Nafil','Takhassousi','Malqa','Sulimaniyah','Ar Rawdah','Al Basateen','Al Marwah',"Al Fayha'a",'Al Ruhaili','Obhur','Attas','Al Awali','Dharat Laban'];
+  const comments=['خدمة ممتازة وسريعة!','الانتظار كان طويل نوعاً ما','المنتج جيد لكن التغليف كان تالف','الموظف كان محترم جداً','سأعود بالتأكيد','الموقع صعب الاستخدام','تجربة رائعة في كل شيء','لم أجد ما أبحث عنه','الأسعار مناسبة جداً','سرعة التوصيل ممتازة',''];
+  const demo=[];
+  for(let i=0;i<60;i++){
+    const b=branches[Math.floor(Math.random()*branches.length)];
+    const nps=Math.random()<0.55?9+Math.round(Math.random()):Math.random()<0.65?7+Math.round(Math.random()):Math.floor(Math.random()*7);
+    const csat=Math.max(1,Math.min(5,Math.round(nps/10*4+1+Math.random()-0.5)));
+    const ces=Math.max(1,Math.min(5,Math.round(nps/10*3.5+1.5+Math.random()-0.5)));
+    const daysAgo=Math.floor(Math.random()*30);
+    const ts=new Date(Date.now()-daysAgo*86400000-Math.random()*86400000).toISOString();
+    demo.push({id:Date.now()+i,ts,branch:b,csat,nps,ces,comment:comments[Math.floor(Math.random()*comments.length)],lang:'ar',aiSentiment:null});
+  }
+  responses=[...demo,...responses];
+  localStorage.setItem('cx_responses',JSON.stringify(responses));
+  renderDash();
+}
+
+function clearData(){
+  if(confirm('هل أنت متأكد من مسح كل البيانات؟ | Are you sure?')){
+    responses=[]; localStorage.removeItem('cx_responses'); renderDash();
+  }
+}
+
+// ══════ INIT ══════
+applyT();
+// Auto-detect branch from URL
+(function(){
+  const params = new URLSearchParams(window.location.search);
+  const branch = params.get('branch');
+  if(branch){
+    document.getElementById('branch-sel').value = branch;
+    ans.branch = branch;
+    const display = document.getElementById('branch-display');
+    display.style.display = 'block';
+    display.innerHTML = '📍 ' + branch;
+    chkS1();
+  }
+})();
+</script>
 </body>
 </html>
