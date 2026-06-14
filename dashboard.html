@@ -139,7 +139,7 @@ tr:last-child td{border-bottom:none;}
         <option value="Dharat Laban">Dharat Laban</option>
       </select>
       <button class="btn-demo" onclick="fetchFromSheets()">🔄 تحديث من Sheets</button>
-      <button class="btn-clear" onclick="clearData()">🗑️ مسح</button>
+      
     </div>
   </div>
 
@@ -190,7 +190,8 @@ async function fetchFromSheets(){
       branch:d.branch, csat:Number(d.csat)||0,
       nps:Number(d.nps)>=0?Number(d.nps):-1,
       ces:Number(d.ces)||0,
-      comment:d.comment||'', lang:d.lang||'ar'
+      comment:d.comment||'', lang:d.lang||'ar',
+      name:d.name||'', phone:d.phone||''
     }));
     responses=mapped;
     localStorage.setItem('cx_responses',JSON.stringify(responses));
@@ -261,7 +262,7 @@ function loadDemo(){
   }
   responses=[...demo,...responses];localStorage.setItem('cx_responses',JSON.stringify(responses));renderDash();
 }
-function clearData(){if(confirm('مسح كل البيانات؟')){responses=[];localStorage.removeItem('cx_responses');renderDash();}}
+
 </script>
 </body>
 </html>
