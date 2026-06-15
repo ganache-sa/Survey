@@ -101,7 +101,7 @@ textarea.s-txt:focus{border-color:var(--brand);}
   </div>
 
   <!-- Step 2: CSAT -->
-  <div class="s-step" id="ss-2-csat">
+  <div class="s-step" id="ss-2">
     <div class="s-card">
       <div class="s-tag tag-csat">رضا العملاء · CSAT</div>
       <p class="s-q">كيف تقيّم تجربتك معنا اليوم؟</p>
@@ -117,11 +117,11 @@ textarea.s-txt:focus{border-color:var(--brand);}
     </div>
     <div class="s-nav">
       <button class="btn-back" onclick="goS(1)">→ السابق</button>
-      <button class="btn-nxt" id="bn2-csat" onclick="goS(3)" disabled>التالي ←</button>
+      <button class="btn-nxt" id="bn2" onclick="goS(3)" disabled>التالي ←</button>
     </div>
   </div>
 
-  <!-- Step 3: NPS -->
+  <!-- Step 3 NPS -->
   <div class="s-step" id="ss-2">
     <div class="s-card">
       <div class="s-tag tag-nps">ترويج العملاء · NPS</div>
@@ -199,7 +199,7 @@ function chkContact(){
 function selStarFixed(v){
   ans.csat=v;
   document.querySelectorAll('.star-b').forEach(b=>b.classList.toggle('lit',+b.dataset.v<=v));
-  document.getElementById('bn2-csat').disabled=false;
+  document.getElementById('bn2').disabled=false;
 }
 
 // NPS buttons
@@ -216,16 +216,14 @@ for(let i=0;i<=10;i++){
   if(branch){
     ans.branch=branch;
     const badge=document.getElementById('branch-badge');
-    badge.style.display='block';
-    badge.innerHTML='📍 '+branch;
-    document.getElementById('bn1').disabled=false;
+    if(badge){ badge.style.display='block'; badge.innerHTML='📍 '+branch; }
   }
 })();
 
 function selStar(v){
   ans.csat=v;
   document.querySelectorAll('.star-b').forEach(b=>b.classList.toggle('lit',+b.dataset.v<=v));
-  document.getElementById('bn2-csat').disabled=false;
+  document.getElementById('bn2').disabled=false;
 }
 function selNPS(v){
   ans.nps=v;
