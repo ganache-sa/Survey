@@ -318,7 +318,7 @@ function openModal(i) {
   document.getElementById('m-ces').textContent = (r.ces || 0) + '/5';
   document.getElementById('m-score').textContent = r.score || '—';
   document.getElementById('m-comment').textContent = r.comment || 'لا توجد ملاحظات';
-  var phone = (r.phone || '').replace(/[^0-9]/g, '');
+  var phone = String(r.phone || '').replace(/[^0-9]/g, '');
   document.getElementById('btn-call').href = phone ? 'tel:' + phone : '#';
   document.getElementById('btn-wa').href = phone ? 'https://wa.me/966' + phone.replace(/^0/, '') : '#';
   document.getElementById('modal').classList.add('open');
