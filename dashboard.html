@@ -316,7 +316,8 @@ function openModal(i) {
   document.getElementById('m-csat').textContent = '⭐'.repeat(r.csat || 0) + ' (' + r.csat + '/5)';
   document.getElementById('m-nps').textContent = r.nps >= 0 ? r.nps + '/10' : '—';
   document.getElementById('m-ces').textContent = (r.ces || 0) + '/5';
-  document.getElementById('m-score').textContent = r.score || '—';
+  var sc = Math.round(((r.csat||0)/5*40) + ((Math.max(r.nps>=0?r.nps:0,0))/10*40) + ((r.ces||0)/5*20));
+  document.getElementById('m-score').textContent = sc + '%';
   document.getElementById('m-comment').textContent = r.comment || 'لا توجد ملاحظات';
   var phone = String(r.phone || '').replace(/[^0-9]/g, '');
   document.getElementById('btn-call').href = phone ? 'tel:' + phone : '#';
